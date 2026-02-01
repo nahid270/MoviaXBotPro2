@@ -275,8 +275,10 @@ async def list_users(bot, message):
     users = await db.get_all_users()
     out = "Users Saved In DB Are:\n\n"
     async for user in users:
-        out += f"<a href=tg://user?id={user['id']}>{user['name']}</a>"
-        if user['ban_status']['is_banned']:
+        # Fixed: using .get for safety
+        name = user.get('name', 'Unknown Name')
+        out += f"<a href=tg://user?id={user['id']}>{name}</a>"
+        if user.get('ban_status', {}).get('is_banned'):
             out += '( Banned User )'
         out += '\n'
     try:
@@ -292,8 +294,10 @@ async def list_chats(bot, message):
     chats = await db.get_all_chats()
     out = "Chats Saved In DB Are:\n\n"
     async for chat in chats:
-        out += f"**Title:** `{chat['title']}`\n**- ID:** `{chat['id']}`"
-        if chat['chat_status']['is_disabled']:
+        # Fixed: using .get to avoid KeyError: 'title'
+        title = chat.get('title', 'Unknown Title')
+        out += f"**Title:** `{title}`\n**- ID:** `{chat['id']}`"
+        if chat.get('chat_status', {}).get('is_disabled'):
             out += '( Disabled Chat )'
         out += '\n'
     try:
